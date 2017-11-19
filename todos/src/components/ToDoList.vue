@@ -1,15 +1,15 @@
 <template>
-<div id= "mylist">
+<div id= "mylist" class="mytodos">
   <h1 class = 'title' v-text="title"></h1>
   <input class = 'inputItem' v-model='newItem' v-on:keyup.enter = "addNew" placeholder="What to do?">
   <ul class="todolist">
-    <li v-for = "item in items">
-      <h3 v-on:mouseenter='itemEnter(item)' v-on:mouseleave='itemLeave(item)'>
-        <input type="checkbox" v-on:click='toFinish(item)'>
-        <p class='item-label' v-bind:class="{'line-through' : item.isFinished}">{{item.label}}</p>
-        <p class='item-status' v-if='item.isFinished'>finished</p>
-        <p class='item-delete' v-if='item.showDelete' v-on:click='deleteClick(item)'>Delete</p>
-      </h3>
+    <li class="for" v-for = "item in items">
+        <h3 v-on:mouseenter='itemEnter(item)' v-on:mouseleave='itemLeave(item)'>
+          <input type="checkbox" v-on:click='toFinish(item)'>
+          <p class='item-label' v-bind:class="{'line-through' : item.isFinished}">{{item.label}}</p>
+          <p class='item-status' v-if='item.isFinished'>finished</p>
+          <button class='item-delete' v-if='item.showDelete' v-on:click='deleteClick(item)'>Delete</button>
+        </h3>
     </li>
   </ul>
 </div>
@@ -41,7 +41,7 @@ export default {
         return
       }
       this.items.push({
-        id: this.items.size + 1,
+        id: this.items.length + 1,
         label: this.newItem,
         isFinished: false,
         showDelete: false
@@ -90,16 +90,16 @@ body {
 }
 .item-status {
   display: inline;
-  background: red;
+  background: green;
   color: white;
   padding: 0 5px;
-  font-size: 12px;
+  font-size: 15px;
 }
 .item-delete {
   display: inline;
-  text-decoration: underline;
-  font-size: 12px;
-  color: gray;
+  font-size: 14px;
+  color: red;
+  padding: 0 5px;
   cursor: pointer;
 }
 .item-label {
