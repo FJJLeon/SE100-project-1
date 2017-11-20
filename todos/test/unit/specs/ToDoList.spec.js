@@ -19,6 +19,7 @@ describe('ToDoList.vue', () =>{
     expect(vm.$el.querySelector('.mytodos ul').classList.contains('todolist')).to.be.true
     expect(vm.$el.querySelectorAll('p')).to.be.exist
     expect(vm.$el.querySelectorAll('button')).to.be.exist
+    expect(vm.$el.querySelectorAll('.edit')).to.be.exist
     //为什么在多层标签下 querySelector选择不到，解决不了
     //expect(vm.$el.querySelector('.mytodos p').classList.contains('item-label')).to.be.true
     //const tmp = vm.$el.querySelector('.mytodos ul')
