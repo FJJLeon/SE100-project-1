@@ -3,13 +3,22 @@
   <h1 class = 'title' v-text="title"></h1>
   <input class = 'inputItem' v-model='newItem' v-on:keyup.enter = "addNew" placeholder="What to do?">
   <ul class="todolist">
-    <li class="for" v-for = "item in items">
-        <h3 v-on:mouseenter='itemEnter(item)' v-on:mouseleave='itemLeave(item)'>
+    <li v-for = "item in items" class="editing: item == editedItem">
+        <h3 v-on:mouseenter='itemEnter(item)' v-on:mouseleave='itemLeave(item)'
+            v-if='item.showLabel'>
           <input type="checkbox" v-on:click='toFinish(item)'>
-          <p class='item-label' v-bind:class="{'line-through' : item.isFinished}">{{item.label}}</p>
+          <p class='item-label'
+            v-on:dblclick='editItem(item)'
+            v-bind:class="{'line-through' : item.isFinished}">{{item.label}}</p>
           <p class='item-status' v-if='item.isFinished'>finished</p>
           <button class='item-delete' v-if='item.showDelete' v-on:click='deleteClick(item)'>Delete</button>
         </h3>
+        <input class="edit" type="text"
+          v-model="item.label"
+          v-if="item.showEdit"
+          v-on:blur="doneEdit(item)"
+          v-on:keyup.enter="doneEdit(item)"
+          v-on:keyup.esc="cancelEdit(item)">
     </li>
   </ul>
 </div>
@@ -25,6 +34,7 @@ export default {
       title: 'My todo list',
       items:  Store.fetch(),
       newItem: '',
+      editedItem: null,
     }
   },
   watch: {
@@ -44,7 +54,9 @@ export default {
         id: this.items.length + 1,
         label: this.newItem,
         isFinished: false,
-        showDelete: false
+        showDelete: false,
+        showLabel: true,
+        showEdit: false,
       })
       this.newItem = ''
     },
@@ -59,7 +71,35 @@ export default {
     },
     deleteClick:function (item) {
       this.items.splice(this.items.indexOf(item),1)
-    }
+    },
+
+    editItem: function (item) {
+      if (this.editedItem != null) {//avoid dbclick two label
+        this.doneEdit(this.editedItem)
+      }
+      this.before = item.label
+      item.showLabel = false
+      item.showEdit = true
+      this.editedItem = item
+    },
+    doneEdit: function (item) {
+      if (!this.editedItem) {
+        return
+      }
+      this.editedItem = null
+      //item.label = item.label.trim()
+      if (!item.label) {
+        this.deleteClick(item)
+      }
+      item.showLabel = true
+      item.showEdit = false
+    },
+    cancelEdit: function (item) {
+      this.editedItem = null
+      item.label = this.before
+      item.showLabel = true
+      item.showEdit = false
+    },
   }
 }
 
@@ -77,12 +117,9 @@ body {
   flex-direction: column;
   align-items: flex-start;
 }
-.title {
-
-}
 .inputItem {
   width: 500px;
-  height: 30px;
+  height: 40px;
   padding: 0 5px;
 }
 .finished{
@@ -108,8 +145,17 @@ body {
 .line-through {
   text-decoration: line-through;
 }
+.edit{
+  width: 200px;
+  height: 40px;
+  padding: 0 5px;
+  margin:15px;
+}
 h1, h2 {
   font-weight: normal;
+}
+h3 {
+  height: 27px;
 }
 ul {
   list-style-type: none;
@@ -119,7 +165,7 @@ ul {
 li {
   font-size:20px;
   display: flex;
-  margin: 0 10px;
+  margin: 0 3px;
 }
 a {
   color: #42b983;
